@@ -12,6 +12,11 @@
       <option name="url" value="https://nexus.nonprod.dwpcloud.uk/repository/maven-public" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="central" />
+      <option name="name" value="Central Repository" />
+      <option name="url" value="https://repo.maven.apache.org/maven2" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="gitlab-maven" />
       <option name="name" value="gitlab-maven" />
       <option name="url" value="https://gitlab.com/api/v4/groups/2769844/-/packages/maven" />
@@ -20,6 +25,11 @@
       <option name="id" value="central" />
       <option name="name" value="Central Repository" />
       <option name="url" value="https://nexus.nonprod.dwpcloud.uk/repository/maven-public" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="spring-milestones" />
+      <option name="name" value="Spring Milestones" />
+      <option name="url" value="https://repo.spring.io/milestone" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="central" />
@@ -35,6 +45,11 @@
       <option name="id" value="jboss.community" />
       <option name="name" value="JBoss Community repository" />
       <option name="url" value="https://repository.jboss.org/nexus/content/repositories/public/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="spring-snapshots" />
+      <option name="name" value="Spring Snapshots" />
+      <option name="url" value="https://repo.spring.io/snapshot" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="maven-central" />

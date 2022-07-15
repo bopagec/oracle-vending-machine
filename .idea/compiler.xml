@@ -8,11 +8,13 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="vending-machine" />
+        <module name="oracle-vending-machine" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="oracle-vending-machine" options="-parameters" />
       <module name="vending-machine" options="-parameters" />
     </option>
   </component>

@@ -1,22 +1,27 @@
-package com.blackpaw.vendingmachine.model;
+package com.blackpaw.vendingmachine;
 
+import com.blackpaw.vendingmachine.dao.ItemRepository;
+import com.blackpaw.vendingmachine.model.Item;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import java.util.List;
+
 @SpringBootApplication
 public class VendingMachineApplication {
-	//private ItemRepository itemRepository;
+	private ItemRepository itemRepository;
 
-	//@Autowired
+	@Autowired
 	public VendingMachineApplication(ItemRepository itemRepository){
-		//this.itemRepository = itemRepository;
+		this.itemRepository = itemRepository;
 	}
 
-	private final Logger logger = LoggerFactory.getLogger(VendingMachineApplication.class);
+	private static final Logger logger = LoggerFactory.getLogger(VendingMachineApplication.class);
 
 	public static void main(String[] args) {
 		SpringApplication.run(VendingMachineApplication.class, args);
@@ -25,10 +30,8 @@ public class VendingMachineApplication {
 
 	@Bean
 	CommandLineRunner runner(){
-		logger.info("loading items...");
-
 		return args -> {
-/*
+			logger.info("loading items...");
 			itemRepository.save(new Item("Water", 1.75, 20));
 			itemRepository.save(new Item("Energy Water", 2.50, 20));
 			itemRepository.save(new Item("Red bull Drink", 2.70, 20));
@@ -41,7 +44,6 @@ public class VendingMachineApplication {
 			itemRepository.save(new Item("Mars", 1.50, 20));
 			itemRepository.save(new Item("Car Phone Charger", 5.50, 20));
 			itemRepository.save(new Item("Extra White Chewing Gum", 0.75, 20));
-*/
 
 			//List<Item> allItems = itemRepository.findAll();
 			//logger.info("items loaded: {}", allItems);

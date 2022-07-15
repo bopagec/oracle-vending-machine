@@ -1,0 +1,4 @@
+com\blackpaw\vendingmachine\VendingMachineApplication.class
+com\blackpaw\vendingmachine\dao\ItemRepository.class
+com\blackpaw\vendingmachine\model\Item.class
+com\blackpaw\vendingmachine\shell\VendCommand.class
