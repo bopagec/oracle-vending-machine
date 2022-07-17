@@ -23,9 +23,9 @@ import static com.blackpaw.vendingmachine.model.Coin.*;
 public class TestCommands {
     private static final Logger logger = LoggerFactory.getLogger(TestCommands.class);
     @Value("${vending-machine.float.min}")
-    private  double minCashFloat;
+    private double minCashFloat;
     @Value("${vending-machine.float.coinMax}")
-    private  double maxCoin;
+    private double maxCoin;
     private ItemRepository itemRepository;
     private VendingMachineRepository vendingMachineRepository;
     private boolean isReady = false;
@@ -106,10 +106,11 @@ public class TestCommands {
                     next.setValue(maxCoin);
                 }
                 else{
+                    double leftOvers = (total  * 100) / pence;
                     if(next.getValue() != null){
-                        next.setValue( total + next.getValue());
+                        next.setValue( leftOvers + next.getValue());
                     }else{
-                        next.setValue(total);
+                        next.setValue(leftOvers);
                     }
 
                 }
