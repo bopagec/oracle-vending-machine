@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,31 +41,6 @@ public class VendController {
     private int maxCoin;
 
     private static Logger logger = LoggerFactory.getLogger(VendController.class);
-
-    @GetMapping("/list")
-    public @ResponseBody
-    ResponseEntity<Object> listProduct() {
-        List<Item> allItems = itemService.getAll();
-        List<ItemDTO> itemDTOs = allItems.stream()
-                .filter(item -> item.getStock() > 0)
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-
-        return new ResponseEntity<>(itemDTOs, HttpStatus.OK);
-    }
-
-    @GetMapping("/select/{id}")
-    public @ResponseBody
-    ResponseEntity<Object> select(@PathVariable("id") long itemId) {
-        Optional<Item> vendItem = itemService.select(itemId);
-        ItemDTO itemDTO = null;
-
-        if(vendItem.isPresent() && vendItem.get().getStock() > 0){
-            itemDTO = convertToDto(vendItem.get());
-        }
-        return new ResponseEntity<>(itemDTO, HttpStatus.OK);
-
-    }
 
     @GetMapping("/create/{float}")
     public @ResponseBody ResponseEntity<Object> create(@NonNull @PathVariable("float") double cashFloat){
@@ -114,6 +90,49 @@ public class VendController {
         logger.info("vending machine is ready now: {}", vendingMachine);
 
         return new ResponseEntity<>(vendingMachine, HttpStatus.OK);
+    }
+
+    @GetMapping("/list")
+    public @ResponseBody
+    ResponseEntity<Object> listProduct() {
+        List<Item> allItems = itemService.getAll();
+        List<ItemDTO> itemDTOs = allItems.stream()
+                .filter(item -> item.getStock() > 0)
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(itemDTOs, HttpStatus.OK);
+    }
+
+    @GetMapping("/select/{id}")
+    public @ResponseBody
+    ResponseEntity<Object> select(@PathVariable("id") long itemId) {
+        Optional<Item> vendItem = itemService.select(itemId);
+        ItemDTO itemDTO = null;
+
+        if(vendItem.isPresent() && vendItem.get().getStock() > 0){
+            itemDTO = convertToDto(vendItem.get());
+        }
+        return new ResponseEntity<>(itemDTO, HttpStatus.OK);
+
+    }
+
+    @PostMapping("/vend")
+    public @ResponseBody ResponseEntity<Object> vend(@NonNull @Valid @RequestBody VendRequest vendRequest){
+        Optional<Item> select = itemService.select(vendRequest.getItemId());
+        DecimalFormat df = new DecimalFormat("0.00");
+        if(select.isPresent()){
+            double customerPaid = vendRequest.getCoins().stream().mapToDouble(value -> value.getPence()).sum() / 100;
+            double itemPrice = select.get().getPrice();
+            if(customerPaid < select.get().getPrice()){
+                return new ResponseEntity<>(
+                        "Not enough money to purchase this item.\nBalance to pay: " + df.format(itemPrice -  customerPaid) + "\nItem price: " + df.format(itemPrice)  + "\nYou paid: " + df.format(customerPaid),
+                        HttpStatus.NOT_ACCEPTABLE);
+            }else
+                return new ResponseEntity<>("done", HttpStatus.OK);
+        }
+        else
+            return new ResponseEntity<>("item not available", HttpStatus.NOT_FOUND);
     }
 
     private ItemDTO convertToDto(Item item) {
