@@ -26,5 +26,5 @@ public abstract class VendingMachine {
     @ElementCollection
     @MapKeyColumn(name="coin_type")
     @Column(name= "count")
-    private  Map<Coin, Double> denominations = new LinkedHashMap<>();
+    private  Map<Coin, Integer> denominations = new LinkedHashMap<>();
 }

@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -39,17 +40,6 @@ public class TestCommands {
     private Item vendingItem;
     private VendingMachine vendingMachine;
 
-    @Getter
-    private final Map<Coin, Double> gbDenominationMap = new LinkedHashMap<>() {{
-        put(ONE_PENCE, null);
-        put(TWO_PENCE, null);
-        put(FIVE_PENCE, null);
-        put(TEN_PENCE, null);
-        put(TWENTY_PENCE, null);
-        put(FIFTY_PENCE, null);
-        put(ONE_POUND, null);
-    }};
-
     @Autowired
     public TestCommands(ItemRepository itemRepository, VendingMachineRepository vendingMachineRepository) {
         this.itemRepository = itemRepository;
@@ -70,9 +60,9 @@ public class TestCommands {
         return sb.toString();
     }
 
-    @ShellMethod("vend item")
-    public String vend(@ShellOption(value = "--id") long id) {
-        ResponseEntity<Object> vend = vendController.vend(id);
+    @ShellMethod("select item")
+    public String select(@ShellOption(value = "--id") long id) {
+        ResponseEntity<Object> vend = vendController.select(id);
         Object body = vend.getBody();
 
         if (body != null) {
@@ -85,7 +75,7 @@ public class TestCommands {
                     .append(" : ").append(vendingMachine.getCurrency())
                     .append(vendingItem.getPrice())
                     .append(System.getProperty("line.separator"))
-                    .append("please insert coins with 'insert --coins' command")
+                    .append("please insert coins with 'vend --coins' command")
                     .append(System.getProperty("line.separator"))
                     .append(System.getProperty("line.separator"));
 
@@ -103,73 +93,13 @@ public class TestCommands {
 
     @ShellMethod("create vending machine with custom float")
     public void create(@ShellOption(value = "--float") double cashFloat) {
-        if (cashFloat < minCashFloat) {
-            logger.info("cash float cannot be less than {}", minCashFloat);
-            return;
-        }
-        if (isReady) {
-            logger.info("vending machine is ready now.");
-            return;
-        }
+        ResponseEntity<Object> response = vendController.create(cashFloat);
 
-        logger.info("loading data to the vending machine...");
-        vendingMachine = new GBVendingMachine();
-
-        List<Item> items = Arrays.asList(
-                new Item("Sparkling Water", 1.75, 20, vendingMachine),
-                new Item("Energy Water", 2.50, 20, vendingMachine),
-                new Item("Red bull Drink", 2.70, 20, vendingMachine),
-                new Item("Coke - Original", 1.25, 20, vendingMachine),
-                new Item("Pepsi - Lite", 1.25, 20, vendingMachine),
-                new Item("Tuna Sandwich", 3.75, 20, vendingMachine),
-                new Item("Egg Sandwich", 3.50, 20, vendingMachine),
-                new Item("Mayo Sandwich", 4.50, 20, vendingMachine),
-                new Item("Snickers Bar", 1.00, 20, vendingMachine),
-                new Item("Mars Bar    ", 1.50, 20, vendingMachine),
-                new Item("Phone Charger", 5.50, 20, vendingMachine),
-                new Item("Chewing Gum   ", 0.75, 20, vendingMachine)
-        );
-
-        vendingMachine.setCashFloat(cashFloat);
-        vendingMachine.setItems(items);
-        vendingMachine.setStatus(Status.READY.name());
-        createDenominations(vendingMachine);
-        vendingMachine.setDenominations(gbDenominationMap);
-        vendingMachineRepository.save(vendingMachine);
-
-        isReady = true;
-        List<Item> allItems = itemRepository.findAll();
-        logger.info("vending machine successfully created: {}", allItems);
-        logger.info("vending machine is ready now: {}", vendingMachine);
-    }
-
-    public void createDenominations(VendingMachine vendingMachine) {
-        if (vendingMachine instanceof GBVendingMachine) {
-            double total = vendingMachine.getCashFloat();
-
-            Iterator<Map.Entry<Coin, Double>> it = gbDenominationMap.entrySet().iterator();
-            Map.Entry<Coin, Double> previous = null;
-
-            while (total > 0) {
-                Map.Entry<Coin, Double> next = it.hasNext() ? it.next() : previous;
-
-                Integer pence = next.getKey().getPence();
-                Double val = (pence / 100.0) * maxCoin;
-
-                if (total - val > 0) {
-                    next.setValue(maxCoin);
-                } else {
-                    double leftOvers = (total * 100) / pence;
-                    if (next.getValue() != null) {
-                        next.setValue(leftOvers + next.getValue());
-                    } else {
-                        next.setValue(leftOvers);
-                    }
-
-                }
-                total -= val;
-                previous = next;
-            }
+        if (response.getStatusCode().equals(HttpStatus.OK)) {
+            isReady = true;
+            logger.info("Vending machine successfully created.{} ", response.getBody());
+        } else {
+            logger.info(response.getBody().toString());
         }
     }
 }

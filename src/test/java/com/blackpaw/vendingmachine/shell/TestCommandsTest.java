@@ -16,7 +16,7 @@ class TestCommandsTest {
     @Autowired
     private TestCommands testCommands;
 
-    @Test
+/*    @Test
     public void testCreateDenomination() {
         double cashFloat = 75;
         GBVendingMachine vendingMachine = new GBVendingMachine();
@@ -29,5 +29,5 @@ class TestCommandsTest {
                 .sum();
 
         Assertions.assertEquals(cashFloat, actualInGBP);
-    }
+    }*/
 }

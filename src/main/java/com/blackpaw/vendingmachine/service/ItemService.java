@@ -21,7 +21,7 @@ public class ItemService {
         return repository.findAll();
     }
 
-    public Optional<Item> vend(long itemId){
+    public Optional<Item> select(long itemId){
         Optional<Item> item = repository.findById(itemId);
 
         if(item.isPresent() && item.get().getStock() > 0){
