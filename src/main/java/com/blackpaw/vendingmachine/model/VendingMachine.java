@@ -21,7 +21,7 @@ public abstract class VendingMachine {
     @OneToMany(mappedBy = "vendingMachine", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
     private List<Item> items;
-    abstract String getCurrency();
+    public abstract String getCurrency();
 
     @ElementCollection
     @MapKeyColumn(name="coin_type")

@@ -11,6 +11,7 @@ import static com.blackpaw.vendingmachine.model.Coin.*;
 @Entity
 @Data
 public class GBVendingMachine extends VendingMachine {
-    private final String currency = "GBP";
+    private final String currency = "£";
+
 }
 

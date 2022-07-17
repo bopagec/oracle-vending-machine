@@ -36,8 +36,11 @@ public class TestCommands {
     @Autowired
     private VendController vendController;
 
+    private Item vendingItem;
+    private VendingMachine vendingMachine;
+
     @Getter
-    private final Map<Coin, Double> gbDenominationMap = new LinkedHashMap<>(){{
+    private final Map<Coin, Double> gbDenominationMap = new LinkedHashMap<>() {{
         put(ONE_PENCE, null);
         put(TWO_PENCE, null);
         put(FIVE_PENCE, null);
@@ -54,7 +57,7 @@ public class TestCommands {
     }
 
     @ShellMethod("list items to purchase")
-    public String list(){
+    public String list() {
         ResponseEntity<Object> response = vendController.listProduct();
         List<ItemDTO> items = (List<ItemDTO>) response.getBody();
         StringBuilder sb = new StringBuilder();
@@ -67,19 +70,50 @@ public class TestCommands {
         return sb.toString();
     }
 
+    @ShellMethod("vend item")
+    public String vend(@ShellOption(value = "--id") long id) {
+        ResponseEntity<Object> vend = vendController.vend(id);
+        Object body = vend.getBody();
+
+        if (body != null) {
+            vendingItem = (Item) body;
+        }
+        if (vendingItem != null) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Selected item: ")
+                    .append(vendingItem.getName())
+                    .append(" : ").append(vendingMachine.getCurrency())
+                    .append(vendingItem.getPrice())
+                    .append(System.getProperty("line.separator"))
+                    .append("please insert coins with 'insert --coins' command")
+                    .append(System.getProperty("line.separator"))
+                    .append(System.getProperty("line.separator"));
+
+            vendingMachine.getDenominations().keySet().stream()
+                    .sorted((o1, o2) -> Integer.valueOf(o1.ordinal()).compareTo(Integer.valueOf(o2.ordinal())))
+                    .forEach(coin -> {
+                        sb.append(coin.ordinal()).append("\t\t")
+                                .append(coin.name()).append(System.getProperty("line.separator"));
+                    });
+
+            return sb.toString();
+        }
+        return "Item not available";
+    }
+
     @ShellMethod("create vending machine with custom float")
     public void create(@ShellOption(value = "--float") double cashFloat) {
-        if(cashFloat < minCashFloat){
+        if (cashFloat < minCashFloat) {
             logger.info("cash float cannot be less than {}", minCashFloat);
             return;
         }
-        if(isReady){
+        if (isReady) {
             logger.info("vending machine is ready now.");
             return;
         }
 
         logger.info("loading data to the vending machine...");
-        VendingMachine vendingMachine = new GBVendingMachine();
+        vendingMachine = new GBVendingMachine();
 
         List<Item> items = Arrays.asList(
                 new Item("Sparkling Water", 1.75, 20, vendingMachine),
@@ -109,27 +143,26 @@ public class TestCommands {
         logger.info("vending machine is ready now: {}", vendingMachine);
     }
 
-    public void createDenominations(VendingMachine vendingMachine){
-        if(vendingMachine instanceof GBVendingMachine){
+    public void createDenominations(VendingMachine vendingMachine) {
+        if (vendingMachine instanceof GBVendingMachine) {
             double total = vendingMachine.getCashFloat();
 
             Iterator<Map.Entry<Coin, Double>> it = gbDenominationMap.entrySet().iterator();
             Map.Entry<Coin, Double> previous = null;
 
-            while (total > 0){
+            while (total > 0) {
                 Map.Entry<Coin, Double> next = it.hasNext() ? it.next() : previous;
 
                 Integer pence = next.getKey().getPence();
                 Double val = (pence / 100.0) * maxCoin;
 
-                if(total - val > 0){
+                if (total - val > 0) {
                     next.setValue(maxCoin);
-                }
-                else{
-                    double leftOvers = (total  * 100) / pence;
-                    if(next.getValue() != null){
-                        next.setValue( leftOvers + next.getValue());
-                    }else{
+                } else {
+                    double leftOvers = (total * 100) / pence;
+                    if (next.getValue() != null) {
+                        next.setValue(leftOvers + next.getValue());
+                    } else {
                         next.setValue(leftOvers);
                     }
 
