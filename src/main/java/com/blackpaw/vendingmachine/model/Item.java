@@ -1,5 +1,6 @@
 package com.blackpaw.vendingmachine.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,7 @@ public class Item {
 
     @ManyToOne
     @JoinColumn(name = "vending_machine_id")
+    @JsonManagedReference
     private VendingMachine vendingMachine;
 
     public Item(String name, double price, int stock, VendingMachine vendingMachine){

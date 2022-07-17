@@ -1,5 +1,6 @@
 package com.blackpaw.vendingmachine.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -18,6 +19,7 @@ public abstract class VendingMachine {
     private double cashFloat;
     private String status;
     @OneToMany(mappedBy = "vendingMachine", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
     private List<Item> items;
     abstract String getCurrency();
 

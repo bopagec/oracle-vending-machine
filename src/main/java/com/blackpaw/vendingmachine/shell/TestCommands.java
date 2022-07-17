@@ -1,8 +1,10 @@
 package com.blackpaw.vendingmachine.shell;
 
 
+import com.blackpaw.vendingmachine.controller.VendController;
 import com.blackpaw.vendingmachine.dao.ItemRepository;
 import com.blackpaw.vendingmachine.dao.VendingMachineRepository;
+import com.blackpaw.vendingmachine.dto.ItemDTO;
 import com.blackpaw.vendingmachine.model.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
@@ -30,6 +33,9 @@ public class TestCommands {
     private VendingMachineRepository vendingMachineRepository;
     private boolean isReady = false;
 
+    @Autowired
+    private VendController vendController;
+
     @Getter
     private final Map<Coin, Double> gbDenominationMap = new LinkedHashMap<>(){{
         put(ONE_PENCE, null);
@@ -47,8 +53,22 @@ public class TestCommands {
         this.vendingMachineRepository = vendingMachineRepository;
     }
 
+    @ShellMethod("list items to purchase")
+    public String list(){
+        ResponseEntity<Object> response = vendController.listProduct();
+        List<ItemDTO> items = (List<ItemDTO>) response.getBody();
+        StringBuilder sb = new StringBuilder();
+        sb.append("ID\t\tNAME \t\t\t\tPrice (£)").append(System.getProperty("line.separator"));
+        sb.append("---------------------------------------------").append(System.getProperty("line.separator"));
+        items.stream().forEach(itemDTO -> {
+            sb.append(itemDTO.getId()).append("\t\t").append(itemDTO.getName()).append("\t\t").append(itemDTO.getPrice()).append(System.getProperty("line.separator"));
+        });
+
+        return sb.toString();
+    }
+
     @ShellMethod("create vending machine with custom float")
-    public void create(@ShellOption(value = "--float") Integer cashFloat) {
+    public void create(@ShellOption(value = "--float") double cashFloat) {
         if(cashFloat < minCashFloat){
             logger.info("cash float cannot be less than {}", minCashFloat);
             return;
@@ -62,18 +82,18 @@ public class TestCommands {
         VendingMachine vendingMachine = new GBVendingMachine();
 
         List<Item> items = Arrays.asList(
-                new Item("Water", 1.75, 20, vendingMachine),
+                new Item("Sparkling Water", 1.75, 20, vendingMachine),
                 new Item("Energy Water", 2.50, 20, vendingMachine),
                 new Item("Red bull Drink", 2.70, 20, vendingMachine),
                 new Item("Coke - Original", 1.25, 20, vendingMachine),
                 new Item("Pepsi - Lite", 1.25, 20, vendingMachine),
                 new Item("Tuna Sandwich", 3.75, 20, vendingMachine),
                 new Item("Egg Sandwich", 3.50, 20, vendingMachine),
-                new Item("Beacon & Mayo Sandwich", 4.50, 20, vendingMachine),
-                new Item("Snickers", 1.00, 20, vendingMachine),
-                new Item("Mars", 1.50, 20, vendingMachine),
-                new Item("Car Phone Charger", 5.50, 20, vendingMachine),
-                new Item("Extra White Chewing Gum", 0.75, 20, vendingMachine)
+                new Item("Mayo Sandwich", 4.50, 20, vendingMachine),
+                new Item("Snickers Bar", 1.00, 20, vendingMachine),
+                new Item("Mars Bar    ", 1.50, 20, vendingMachine),
+                new Item("Phone Charger", 5.50, 20, vendingMachine),
+                new Item("Chewing Gum   ", 0.75, 20, vendingMachine)
         );
 
         vendingMachine.setCashFloat(cashFloat);
