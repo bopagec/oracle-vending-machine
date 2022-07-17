@@ -103,7 +103,7 @@ public class VendController {
 
         vendingMachine.setCashFloat(cashFloat);
         vendingMachine.setItems(items);
-        vendingMachine.setStatus(Status.READY.name());
+        vendingMachine.setStatus(VendingMachine.Status.READY);
         createDenominations(vendingMachine, gbDenominationMap);
         vendingMachine.setDenominations(gbDenominationMap);
 

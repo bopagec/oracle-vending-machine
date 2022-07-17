@@ -6,6 +6,7 @@ import com.blackpaw.vendingmachine.dao.ItemRepository;
 import com.blackpaw.vendingmachine.dao.VendingMachineRepository;
 import com.blackpaw.vendingmachine.dto.ItemDTO;
 import com.blackpaw.vendingmachine.model.*;
+import com.blackpaw.vendingmachine.service.VendingMachineService;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
@@ -14,8 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
+import org.springframework.shell.standard.ShellMethodAvailability;
 import org.springframework.shell.standard.ShellOption;
 
 import java.util.*;
@@ -26,28 +29,20 @@ import static com.blackpaw.vendingmachine.model.Coin.*;
 @NoArgsConstructor
 public class TestCommands {
     private static final Logger logger = LoggerFactory.getLogger(TestCommands.class);
-    @Value("${vending-machine.float.min}")
-    private double minCashFloat;
-    @Value("${vending-machine.float.coinMax}")
-    private double maxCoin;
-    private ItemRepository itemRepository;
-    private VendingMachineRepository vendingMachineRepository;
-    private boolean isReady = false;
 
     @Autowired
     private VendController vendController;
+    @Autowired
+    private VendingMachineService vendingMachineService;
 
-    private Item vendingItem;
+    private ItemDTO vendingItem;
     private VendingMachine vendingMachine;
 
-    @Autowired
-    public TestCommands(ItemRepository itemRepository, VendingMachineRepository vendingMachineRepository) {
-        this.itemRepository = itemRepository;
-        this.vendingMachineRepository = vendingMachineRepository;
-    }
-
-    @ShellMethod("list items to purchase")
+    @ShellMethod(value = "list items")
     public String list() {
+        Availability availability = machineAvailabilityCheck();
+        if(!availability.isAvailable())  return availability.getReason();
+
         ResponseEntity<Object> response = vendController.listProduct();
         List<ItemDTO> items = (List<ItemDTO>) response.getBody();
         StringBuilder sb = new StringBuilder();
@@ -60,13 +55,16 @@ public class TestCommands {
         return sb.toString();
     }
 
-    @ShellMethod("select item")
+    @ShellMethod(value = "select item")
     public String select(@ShellOption(value = "--id") long id) {
+        Availability availability = machineAvailabilityCheck();
+        if(!availability.isAvailable())  return availability.getReason();
+
         ResponseEntity<Object> vend = vendController.select(id);
         Object body = vend.getBody();
 
         if (body != null) {
-            vendingItem = (Item) body;
+            vendingItem = (ItemDTO) body;
         }
         if (vendingItem != null) {
             StringBuilder sb = new StringBuilder();
@@ -88,18 +86,36 @@ public class TestCommands {
 
             return sb.toString();
         }
+
         return "Item not available";
     }
 
-    @ShellMethod("create vending machine with custom float")
+    @ShellMethod(value = "create machine")
     public void create(@ShellOption(value = "--float") double cashFloat) {
         ResponseEntity<Object> response = vendController.create(cashFloat);
 
         if (response.getStatusCode().equals(HttpStatus.OK)) {
-            isReady = true;
+            vendingMachine = (GBVendingMachine) response.getBody();
             logger.info("Vending machine successfully created.{} ", response.getBody());
         } else {
             logger.info(response.getBody().toString());
         }
+    }
+
+    // for some reason this method will not get automatically picked up by the caller methods
+    // hence, we manually call the method to check it.
+    @ShellMethodAvailability({"list", "select"})
+    public Availability machineAvailabilityCheck(){
+        if(vendingMachine == null){
+            if(vendingMachineService.getMachine().isPresent()){
+                vendingMachine = vendingMachineService.getMachine().get();
+            }
+        }
+
+        if(vendingMachine != null && vendingMachine.getStatus() == VendingMachine.Status.READY){
+            return Availability.available();
+        }
+
+        return Availability.unavailable("Vending Machine has not been created or not ready");
     }
 }
