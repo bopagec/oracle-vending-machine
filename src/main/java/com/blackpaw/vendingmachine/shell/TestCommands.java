@@ -22,6 +22,7 @@ import org.springframework.shell.standard.ShellMethodAvailability;
 import org.springframework.shell.standard.ShellOption;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 import static com.blackpaw.vendingmachine.model.Coin.*;
 
@@ -88,6 +89,27 @@ public class TestCommands {
         }
 
         return "Item not available";
+    }
+
+    @ShellMethod(value = "vend")
+    public String vend(@ShellOption("--id") int itemId, @ShellOption("--coins") int... coinIds){
+        Availability availability = machineAvailabilityCheck();
+        if(!availability.isAvailable())  return availability.getReason();
+
+        VendRequest vendRequest = new VendRequest();
+        vendRequest.setItemId(itemId);
+        List<Coin> coins = new ArrayList<>();
+
+        for(int i=0; i < coinIds.length; i++){
+            Coin coin = values()[coinIds[i]];
+            if(coin != null){
+                coins.add(coin);
+            }
+        }
+
+        vendRequest.setCoins(coins);
+
+        return vendController.vend(vendRequest).getBody().toString();
     }
 
     @ShellMethod(value = "create machine")
