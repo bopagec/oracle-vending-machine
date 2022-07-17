@@ -1,0 +1,4 @@
+vending-machine:
+  float:
+    min: 25
+    coinMax: 50
