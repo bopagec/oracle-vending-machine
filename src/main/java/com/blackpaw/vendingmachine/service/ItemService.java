@@ -29,6 +29,11 @@ public class ItemService {
         }
         return Optional.empty();
     }
+
+    public void updateItem(Item item){
+        item.setStock(item.getStock() - 1 );
+        repository.save(item);
+    }
 /*
     public VendResponse vend(VendRequest request){
         Optional<Item> item = repository.findById(request.getItemId());

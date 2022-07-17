@@ -119,20 +119,32 @@ public class VendController {
 
     @PostMapping("/vend")
     public @ResponseBody ResponseEntity<Object> vend(@NonNull @Valid @RequestBody VendRequest vendRequest){
-        Optional<Item> select = itemService.select(vendRequest.getItemId());
+        Optional<Item> optSelectedItem = itemService.select(vendRequest.getItemId());
         DecimalFormat df = new DecimalFormat("0.00");
-        if(select.isPresent()){
+        if(optSelectedItem.isPresent()){
             double customerPaid = vendRequest.getCoins().stream().mapToDouble(value -> value.getPence()).sum() / 100;
-            double itemPrice = select.get().getPrice();
-            if(customerPaid < select.get().getPrice()){
+            double itemPrice = optSelectedItem.get().getPrice();
+            if(customerPaid < itemPrice){
                 return new ResponseEntity<>(
                         "Not enough money to purchase this item.\nBalance to pay: " + df.format(itemPrice -  customerPaid) + "\nItem price: " + df.format(itemPrice)  + "\nYou paid: " + df.format(customerPaid),
                         HttpStatus.NOT_ACCEPTABLE);
-            }else
+            }
+            else if(customerPaid == itemPrice){
+                itemService.updateItem(optSelectedItem.get());
+                vendingMachineService.updateMachine(vendRequest, customerPaid);
+                return new ResponseEntity<>("Item successfully vended. Thank you.", HttpStatus.OK);
+            }
+            else{
                 return new ResponseEntity<>("done", HttpStatus.OK);
+            }
         }
         else
             return new ResponseEntity<>("item not available", HttpStatus.NOT_FOUND);
+    }
+
+    private List<Coin> calculateCustomerBalance(VendRequest vendRequest) {
+
+        return null;
     }
 
     private ItemDTO convertToDto(Item item) {
