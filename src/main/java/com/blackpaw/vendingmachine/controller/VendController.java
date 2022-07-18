@@ -136,7 +136,7 @@ public class VendController {
             }
             else if(customerPaid == itemPrice){
                 itemService.updateItem(optSelectedItem.get(), false);
-                vendingMachineService.updateMachine(vendRequest, customerPaid, false);
+                vendingMachineService.updateMachine(vendRequest, customerPaid, true);
                 return new ResponseEntity<>("Item successfully vended. Thank you.", HttpStatus.OK);
             }
             else{
