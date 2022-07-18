@@ -7,7 +7,6 @@ import com.blackpaw.vendingmachine.model.VendingMachine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.Map;
 import java.util.Optional;
 
@@ -29,14 +28,19 @@ public class VendingMachineService {
         return repository.findAll().stream().findFirst();
     }
 
-    public void updateMachine(VendRequest vendRequest, double money){
+    public void updateMachine(VendRequest vendRequest, double money, boolean addAndUpdate){
         VendingMachine machine = getMachine().get();
         Map<Coin, Integer> oldDenominations = machine.getDenominations();
 
         vendRequest.getCoins().stream().forEach(coin -> {
-            oldDenominations.computeIfPresent(coin, (coin1, integer) -> ++integer);
+            oldDenominations.computeIfPresent(coin, (coin1, val) -> addAndUpdate ? ++val : --val);
         });
-        machine.setCashFloat(machine.getCashFloat() + money);
+
+        if(addAndUpdate){
+            machine.setCashFloat(machine.getCashFloat() + money);
+        }else{
+            machine.setCashFloat(machine.getCashFloat() - money);
+        }
         repository.save(machine);
     }
 }

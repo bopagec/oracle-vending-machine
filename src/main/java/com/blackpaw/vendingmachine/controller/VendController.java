@@ -4,8 +4,6 @@ import com.blackpaw.vendingmachine.dto.ItemDTO;
 import com.blackpaw.vendingmachine.model.*;
 import com.blackpaw.vendingmachine.service.ItemService;
 import com.blackpaw.vendingmachine.service.VendingMachineService;
-import com.blackpaw.vendingmachine.shell.TestCommands;
-import lombok.Getter;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +15,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -121,6 +120,12 @@ public class VendController {
     public @ResponseBody ResponseEntity<Object> vend(@NonNull @Valid @RequestBody VendRequest vendRequest){
         Optional<Item> optSelectedItem = itemService.select(vendRequest.getItemId());
         DecimalFormat df = new DecimalFormat("0.00");
+        Optional<VendingMachine> machine = vendingMachineService.getMachine();
+
+        if(!machine.isPresent() || machine.get().getStatus() != VendingMachine.Status.READY){
+            return new ResponseEntity<>("Vending Machine not available. Please try again later.", HttpStatus.OK);
+        }
+
         if(optSelectedItem.isPresent()){
             double customerPaid = vendRequest.getCoins().stream().mapToDouble(value -> value.getPence()).sum() / 100;
             double itemPrice = optSelectedItem.get().getPrice();
@@ -130,20 +135,71 @@ public class VendController {
                         HttpStatus.NOT_ACCEPTABLE);
             }
             else if(customerPaid == itemPrice){
-                itemService.updateItem(optSelectedItem.get());
-                vendingMachineService.updateMachine(vendRequest, customerPaid);
+                itemService.updateItem(optSelectedItem.get(), false);
+                vendingMachineService.updateMachine(vendRequest, customerPaid, false);
                 return new ResponseEntity<>("Item successfully vended. Thank you.", HttpStatus.OK);
             }
             else{
-                return new ResponseEntity<>("done", HttpStatus.OK);
+                List<Coin> balanceInCoins = returnCustomerBalance(vendRequest, customerPaid, optSelectedItem.get());
+                return new ResponseEntity<>(
+                        "Item successfully vended. Thank you.\n"+
+                        balanceInCoins,
+                        HttpStatus.OK);
             }
         }
         else
             return new ResponseEntity<>("item not available", HttpStatus.NOT_FOUND);
     }
 
-    private List<Coin> calculateCustomerBalance(VendRequest vendRequest) {
+    private List<Coin> returnCustomerBalance(VendRequest vendRequest, double customerPaid, Item item) {
+        BigDecimal customerPaidBD = new BigDecimal(customerPaid).setScale(2, RoundingMode.HALF_DOWN);
+        BigDecimal itemPriceBG = new BigDecimal(item.getPrice()).setScale(2, RoundingMode.HALF_DOWN);
 
+        Long balanceInPence = customerPaidBD.subtract(itemPriceBG).multiply(new BigDecimal(100)).longValue();
+
+        List<Coin> coinsToPay = new ArrayList<>();
+
+        // first pay in the vending machine and will reverse if not possible to pay the balance
+        vendingMachineService.updateMachine(vendRequest, customerPaid, true);
+        // update the item  and will reverse if not possible to pay the balance
+        itemService.updateItem(item, false);
+
+        VendingMachine vendingMachine = vendingMachineService.getMachine().get();
+
+        Comparator<Coin> coinComparator =(o1, o2) -> Integer.valueOf(o1.ordinal()).compareTo(o2.ordinal());
+
+        List<Coin> sortedDenominations = vendingMachine.getDenominations().keySet().stream()
+                .sorted(coinComparator::compare)
+                .collect(Collectors.toList());
+
+        for(Coin coin : sortedDenominations){
+            long coins = balanceInPence / coin.getPence();
+            // vending machine has coins to pay
+            if(vendingMachine.getDenominations().get(coin) > coins){
+                // update the coins to pay map
+                for(int i=0; i < coins; i++){
+                    coinsToPay.add(coin);
+                }
+                balanceInPence = balanceInPence % coin.getPence();
+
+                if(balanceInPence == 0)
+                    break;
+            }
+        }
+
+        if(balanceInPence == 0){
+            VendRequest balanceVendRequest = new VendRequest();
+            balanceVendRequest.setItemId(item.getId());
+            balanceVendRequest.setCoins(coinsToPay);
+
+            vendingMachineService.updateMachine(balanceVendRequest, customerPaid - item.getPrice(), false );
+            return coinsToPay;
+        }
+        else{
+            // rollback process, cannot vendor the item
+            itemService.updateItem(item, true);
+            vendingMachineService.updateMachine(vendRequest, customerPaid, false);
+        }
         return null;
     }
 

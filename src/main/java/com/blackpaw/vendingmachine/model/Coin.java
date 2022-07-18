@@ -1,8 +1,6 @@
 package com.blackpaw.vendingmachine.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-public enum Coin {
+public enum Coin{
     ONE_POUND(100),
     FIFTY_PENCE(50),
     TWENTY_PENCE(20),

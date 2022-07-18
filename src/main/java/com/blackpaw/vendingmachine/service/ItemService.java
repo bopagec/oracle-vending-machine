@@ -30,24 +30,13 @@ public class ItemService {
         return Optional.empty();
     }
 
-    public void updateItem(Item item){
-        item.setStock(item.getStock() - 1 );
-        repository.save(item);
-    }
-/*
-    public VendResponse vend(VendRequest request){
-        Optional<Item> item = repository.findById(request.getItemId());
-
-        if(item.isPresent() && item.get().getStock() > 0){
-            double price = item.get().getPrice();
-
-            double coinInTotal = request.getCoins().stream().mapToDouble(value -> value.getPence()).sum() / 100;
-            if(coinInTotal < price){
-                //return VendResponse.builder().status(false).result("not enough money provided, ")
-            }
-
+    public void updateItem(Item item, boolean addAndUpdate){
+        if(addAndUpdate){
+            item.setStock(item.getStock() + 1 );
+        }else{
+            item.setStock(item.getStock() - 1 );
         }
 
-        return null;
-    }*/
+        repository.save(item);
+    }
 }

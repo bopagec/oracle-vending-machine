@@ -2,11 +2,7 @@ package com.blackpaw.vendingmachine.model;
 
 import lombok.Data;
 
-import javax.persistence.*;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import static com.blackpaw.vendingmachine.model.Coin.*;
+import javax.persistence.Entity;
 
 @Entity
 @Data

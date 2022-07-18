@@ -2,17 +2,16 @@ package com.blackpaw.vendingmachine.shell;
 
 
 import com.blackpaw.vendingmachine.controller.VendController;
-import com.blackpaw.vendingmachine.dao.ItemRepository;
-import com.blackpaw.vendingmachine.dao.VendingMachineRepository;
 import com.blackpaw.vendingmachine.dto.ItemDTO;
-import com.blackpaw.vendingmachine.model.*;
+import com.blackpaw.vendingmachine.model.Coin;
+import com.blackpaw.vendingmachine.model.GBVendingMachine;
+import com.blackpaw.vendingmachine.model.VendRequest;
+import com.blackpaw.vendingmachine.model.VendingMachine;
 import com.blackpaw.vendingmachine.service.VendingMachineService;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.shell.Availability;
@@ -21,10 +20,10 @@ import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
 import org.springframework.shell.standard.ShellOption;
 
-import java.util.*;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.List;
 
-import static com.blackpaw.vendingmachine.model.Coin.*;
+import static com.blackpaw.vendingmachine.model.Coin.values;
 
 @ShellComponent
 @NoArgsConstructor
@@ -79,7 +78,7 @@ public class TestCommands {
                     .append(System.getProperty("line.separator"));
 
             vendingMachine.getDenominations().keySet().stream()
-                    .sorted((o1, o2) -> Integer.valueOf(o1.ordinal()).compareTo(Integer.valueOf(o2.ordinal())))
+                    .sorted((o1, o2) -> Integer.valueOf(o1.ordinal()).compareTo(o2.ordinal()))
                     .forEach(coin -> {
                         sb.append(coin.ordinal()).append("\t\t")
                                 .append(coin.name()).append(System.getProperty("line.separator"));

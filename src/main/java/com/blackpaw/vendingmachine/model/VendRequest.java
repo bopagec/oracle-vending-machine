@@ -1,6 +1,5 @@
 package com.blackpaw.vendingmachine.model;
 
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
