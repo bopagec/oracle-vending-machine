@@ -1,4 +1,4 @@
-# Read Me First
+# Read Me
 ## Oracle Analytics Coding Challenge
 #### the aim is to provide the following requirements. 
 * Initialise a vending machine with a given float.
@@ -35,7 +35,7 @@
 * select an item form the list with it's corresponding item id (ie: itemId 7)
 > http://localhost:8080/vending-machine/select/7 (GET request)
 * vend an item with the `VendRequest`
-> http://localhost:8080/vending-machine/vend
+> http://localhost:8080/vending-machine/vend (POST request)
 ```json
 {
     "itemId": 7,
