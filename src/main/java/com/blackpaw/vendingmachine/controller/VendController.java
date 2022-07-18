@@ -142,7 +142,7 @@ public class VendController {
             else{
                 List<Coin> balanceInCoins = returnCustomerBalance(vendRequest, customerPaid, optSelectedItem.get());
                 return new ResponseEntity<>(
-                        "Item successfully vended. Thank you.\n"+
+                        "Item successfully vended. Thank you.\nTake the balance\n"+
                         balanceInCoins,
                         HttpStatus.OK);
             }

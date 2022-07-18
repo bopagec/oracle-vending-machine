@@ -1,4 +1,15 @@
-L:\My Drive\Main PC\All Documents\My Learnings\on-git-hub\oracle-vending-machine\src\main\java\com\blackpaw\vendingmachine\shell\VendCommand.java
+L:\My Drive\Main PC\All Documents\My Learnings\on-git-hub\oracle-vending-machine\src\main\java\com\blackpaw\vendingmachine\model\VendRequest.java
 L:\My Drive\Main PC\All Documents\My Learnings\on-git-hub\oracle-vending-machine\src\main\java\com\blackpaw\vendingmachine\dao\ItemRepository.java
+L:\My Drive\Main PC\All Documents\My Learnings\on-git-hub\oracle-vending-machine\src\main\java\com\blackpaw\vendingmachine\model\VendingMachine.java
+L:\My Drive\Main PC\All Documents\My Learnings\on-git-hub\oracle-vending-machine\src\main\java\com\blackpaw\vendingmachine\model\GBVendingMachine.java
 L:\My Drive\Main PC\All Documents\My Learnings\on-git-hub\oracle-vending-machine\src\main\java\com\blackpaw\vendingmachine\VendingMachineApplication.java
 L:\My Drive\Main PC\All Documents\My Learnings\on-git-hub\oracle-vending-machine\src\main\java\com\blackpaw\vendingmachine\model\Item.java
+L:\My Drive\Main PC\All Documents\My Learnings\on-git-hub\oracle-vending-machine\src\main\java\com\blackpaw\vendingmachine\dao\VendingMachineRepository.java
+L:\My Drive\Main PC\All Documents\My Learnings\on-git-hub\oracle-vending-machine\src\main\java\com\blackpaw\vendingmachine\controller\VendController.java
+L:\My Drive\Main PC\All Documents\My Learnings\on-git-hub\oracle-vending-machine\src\main\java\com\blackpaw\vendingmachine\service\ItemService.java
+L:\My Drive\Main PC\All Documents\My Learnings\on-git-hub\oracle-vending-machine\src\main\java\com\blackpaw\vendingmachine\service\VendingMachineService.java
+L:\My Drive\Main PC\All Documents\My Learnings\on-git-hub\oracle-vending-machine\src\main\java\com\blackpaw\vendingmachine\model\Status.java
+L:\My Drive\Main PC\All Documents\My Learnings\on-git-hub\oracle-vending-machine\src\main\java\com\blackpaw\vendingmachine\model\Coin.java
+L:\My Drive\Main PC\All Documents\My Learnings\on-git-hub\oracle-vending-machine\src\main\java\com\blackpaw\vendingmachine\model\VendResponse.java
+L:\My Drive\Main PC\All Documents\My Learnings\on-git-hub\oracle-vending-machine\src\main\java\com\blackpaw\vendingmachine\dto\ItemDTO.java
+L:\My Drive\Main PC\All Documents\My Learnings\on-git-hub\oracle-vending-machine\src\main\java\com\blackpaw\vendingmachine\shell\TestCommands.java
