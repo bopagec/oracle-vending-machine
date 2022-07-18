@@ -8,7 +8,9 @@ import com.blackpaw.vendingmachine.model.GBVendingMachine;
 import com.blackpaw.vendingmachine.model.VendRequest;
 import com.blackpaw.vendingmachine.model.VendingMachine;
 import com.blackpaw.vendingmachine.service.VendingMachineService;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,7 @@ public class TestCommands {
     private VendingMachineService vendingMachineService;
 
     private ItemDTO vendingItem;
+    @Getter @Setter
     private VendingMachine vendingMachine;
 
     @ShellMethod(value = "list items")

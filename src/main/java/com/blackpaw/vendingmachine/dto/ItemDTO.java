@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 @Builder
 public class ItemDTO {
-    private String id;
+    private long id;
     private String name;
     private double price;
 }

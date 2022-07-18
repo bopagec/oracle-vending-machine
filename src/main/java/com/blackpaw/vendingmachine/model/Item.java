@@ -1,7 +1,9 @@
 package com.blackpaw.vendingmachine.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -9,6 +11,8 @@ import javax.persistence.*;
 @Entity
 @Data
 @NoArgsConstructor
+@EqualsAndHashCode
+@AllArgsConstructor
 public class Item {
     @Id
     @GeneratedValue( strategy = GenerationType.AUTO)
