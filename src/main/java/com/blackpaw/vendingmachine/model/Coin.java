@@ -1,6 +1,7 @@
 package com.blackpaw.vendingmachine.model;
 
 public enum Coin{
+    TWO_POUND(200),
     ONE_POUND(100),
     FIFTY_PENCE(50),
     TWENTY_PENCE(20),

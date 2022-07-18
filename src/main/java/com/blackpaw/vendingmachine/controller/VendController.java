@@ -67,13 +67,14 @@ public class VendController {
         );
 
         Map<Coin, Integer> gbDenominationMap = new LinkedHashMap<>() {{
-            put(ONE_PENCE, null);
-            put(TWO_PENCE, null);
-            put(FIVE_PENCE, null);
-            put(TEN_PENCE, null);
-            put(TWENTY_PENCE, null);
-            put(FIFTY_PENCE, null);
-            put(ONE_POUND, null);
+            put(ONE_PENCE, 0);
+            put(TWO_PENCE, 0);
+            put(FIVE_PENCE, 0);
+            put(TEN_PENCE, 0);
+            put(TWENTY_PENCE, 0);
+            put(FIFTY_PENCE, 0);
+            put(ONE_POUND, 0);
+            put(TWO_POUND, 0);
         }};
 
         vendingMachine.setCashFloat(cashFloat);
@@ -153,9 +154,9 @@ public class VendController {
 
     private List<Coin> returnCustomerBalance(VendRequest vendRequest, double customerPaid, Item item) {
         BigDecimal customerPaidBD = new BigDecimal(customerPaid).setScale(2, RoundingMode.HALF_DOWN);
-        BigDecimal itemPriceBG = new BigDecimal(item.getPrice()).setScale(2, RoundingMode.HALF_DOWN);
+        BigDecimal itemPriceBD = new BigDecimal(item.getPrice()).setScale(2, RoundingMode.HALF_DOWN);
 
-        Long balanceInPence = customerPaidBD.subtract(itemPriceBG).multiply(new BigDecimal(100)).longValue();
+        Long balanceInPence = customerPaidBD.subtract(itemPriceBD).multiply(new BigDecimal(100)).longValue();
 
         List<Coin> coinsToPay = new ArrayList<>();
 
