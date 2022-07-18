@@ -35,6 +35,7 @@
 * select an item form the list with it's corresponding item id (ie: itemId 7)
 > http://localhost:8080/vending-machine/select/7 (GET request)
 * vend an item with the `VendRequest`
+> http://localhost:8080/vending-machine/vend
 ```json
 {
     "itemId": 7,
