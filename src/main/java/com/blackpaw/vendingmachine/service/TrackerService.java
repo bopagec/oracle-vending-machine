@@ -5,7 +5,9 @@ import com.blackpaw.vendingmachine.model.Tracker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TrackerService {
@@ -18,5 +20,9 @@ public class TrackerService {
 
     public List<Tracker> findAll(){
         return trackerRepository.findAll();
+    }
+
+    public Map<String, Integer> trackCoins(){
+        return trackerRepository.trackCoins();
     }
 }

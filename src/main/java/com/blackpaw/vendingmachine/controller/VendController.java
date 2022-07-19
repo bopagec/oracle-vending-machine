@@ -158,6 +158,15 @@ public class VendController {
             return new ResponseEntity<>("item not available", HttpStatus.NOT_FOUND);
     }
 
+    @GetMapping("/track")
+    public ResponseEntity<Object> trackChanges(){
+
+        Map<String, Integer> trackers = trackerService.trackCoins();
+
+        return new ResponseEntity<>(trackers, HttpStatus.OK);
+
+    }
+
     private void updateTracker(Item item, List<Coin> coins){
         Tracker tracker = new Tracker();
         tracker.setItem(item);

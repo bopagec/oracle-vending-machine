@@ -45,6 +45,8 @@
     ]
 }
 ```
+* track coin changes
+> http://localhost:8080/vending-machine/track (GET erquest)
 
 ## Technologies used
 * Spring boot 2.6.5
