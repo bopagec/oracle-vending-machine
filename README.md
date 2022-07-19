@@ -26,6 +26,7 @@
    - database `jdbc:h2:mem:testdb`
    - username `sa`
    - password (leave blank)
+   - see ```TRACKER``` table to track changes
 
 ## How to test on Postman?
 * create a vending machine with custom float of 50
