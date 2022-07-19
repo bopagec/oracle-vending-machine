@@ -21,11 +21,10 @@ public class Item {
     private double price;
     private int stock;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "vending_machine_id")
     @JsonManagedReference
     private VendingMachine vendingMachine;
-
 
     public Item(String name, double price, int stock, VendingMachine vendingMachine){
         this.name = name;

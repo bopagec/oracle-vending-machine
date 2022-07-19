@@ -20,7 +20,7 @@ public class Tracker {
     private int twoPence;
     private int onePence;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Item item;
 
     public void updateCoins(Coin coin, int count){

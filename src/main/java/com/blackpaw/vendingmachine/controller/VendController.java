@@ -46,7 +46,9 @@ public class VendController {
 
     @GetMapping("/create/{float}")
     public @ResponseBody ResponseEntity<Object> create(@NonNull @PathVariable("float") double cashFloat){
-        vendingMachineService.reset();
+        if(vendingMachineService.getMachine().isPresent()){
+            return new ResponseEntity<>("vending machine already exists.", HttpStatus.BAD_REQUEST);
+        }
 
         VendingMachine vendingMachine = new GBVendingMachine();
 

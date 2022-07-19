@@ -1,0 +1,121 @@
+{
+	"info": {
+		"_postman_id": "147e467d-32ff-4623-81c5-1274f1f8d6a5",
+		"name": "ORACLE_VENDING_MACHINE",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "6078369"
+	},
+	"item": [
+		{
+			"name": "list",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/vending-machine/list",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"vending-machine",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/vending-machine/create/50",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"vending-machine",
+						"create",
+						"50"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "select",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/vending-machine/select/8",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"vending-machine",
+						"select",
+						"8"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "vend",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"itemId\": 3,\r\n    \"coins\":[\r\n        \"ONE_POUND\", \"FIFTY_PENCE\", \"ONE_POUND\", \"ONE_POUND\", \"TEN_PENCE\", \"TEN_PENCE\", \"FIFTY_PENCE\",\"ONE_POUND\", \"FIFTY_PENCE\", \"FIFTY_PENCE\", \"TEN_PENCE\", \"TEN_PENCE\"\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/vending-machine/vend",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"vending-machine",
+						"vend"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "track",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/vending-machine/track",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"vending-machine",
+						"track"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

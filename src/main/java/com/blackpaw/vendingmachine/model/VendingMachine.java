@@ -2,6 +2,7 @@ package com.blackpaw.vendingmachine.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.util.LinkedHashMap;
@@ -26,6 +27,7 @@ public abstract class VendingMachine {
     @ElementCollection(fetch = FetchType.EAGER)
     @MapKeyColumn(name="coin_type")
     @Column(name= "count")
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private  Map<Coin, Integer> denominations = new LinkedHashMap<>();
 
     public enum Status{
