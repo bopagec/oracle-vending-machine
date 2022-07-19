@@ -1,4 +1,4 @@
-# Read Me
+# README file
 ## Oracle Analytics Coding Challenge
 #### the aim is to provide the following requirements. 
 * Initialise a vending machine with a given float.
@@ -70,7 +70,7 @@ This is because it can be easily integrated with any mobile devices that can be 
 
 ## Assumptions
 * VendingMachine supports only for UK money denominations.
-* Only 1 vending machine is installed, at the moment vending will be destroyed and re-initiated when a vending machine is created.
+* Only 1 vending machine is installed. We must rerun the application if we want to install a new vending machine
 * Customer should insert arrays of coins to vend an item. If not enough money is inserted coins will be ejected and customer should reinsert correctly.
 * Vending Machine denominations cash float and min coin count can be changed from the property file.
 * When the Vending Machine is created it will break down denominations equally.
