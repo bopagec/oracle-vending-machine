@@ -21,13 +21,15 @@
 * vend an item with the item id with arrays of corresponding coin denomination id
 * in below example customer selected item id 4 and inserted ONE_POUND ONE_POUND FIFTY_PENCE and TWENTY_PENCE (with their ids)
 > vend --id 4 --coins 0 0 1 2
-* track changes in the h2 in-memory database
+* track changes
+> track
+* see database in h2 in-memory database
    - url`http://localhost:8080/h2`
    - database `jdbc:h2:mem:testdb`
    - username `sa`
    - password (leave blank)
    - see ```TRACKER``` table to track changes
-
+   
 ## How to test on Postman?
 * create a vending machine with custom float of 50
 > http://localhost:8080/vending-machine/create/50 (GET request)

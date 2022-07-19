@@ -18,10 +18,6 @@ public class TrackerService {
         trackerRepository.save(tracker);
     }
 
-    public List<Tracker> findAll(){
-        return trackerRepository.findAll();
-    }
-
     public Map<String, Integer> trackCoins(){
         return trackerRepository.trackCoins();
     }

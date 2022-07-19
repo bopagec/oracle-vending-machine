@@ -7,6 +7,7 @@ import com.blackpaw.vendingmachine.model.Coin;
 import com.blackpaw.vendingmachine.model.GBVendingMachine;
 import com.blackpaw.vendingmachine.model.VendRequest;
 import com.blackpaw.vendingmachine.model.VendingMachine;
+import com.blackpaw.vendingmachine.service.TrackerService;
 import com.blackpaw.vendingmachine.service.VendingMachineService;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,7 @@ import org.springframework.shell.standard.ShellOption;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.blackpaw.vendingmachine.model.Coin.values;
 
@@ -38,21 +40,24 @@ public class TestCommands {
     private VendingMachineService vendingMachineService;
 
     private ItemDTO vendingItem;
-    @Getter @Setter
+    @Getter
+    @Setter
     private VendingMachine vendingMachine;
+
+    private String LINE_SEPARATOR = System.getProperty("line.separator");
 
     @ShellMethod(value = "list items")
     public String list() {
         Availability availability = machineAvailabilityCheck();
-        if(!availability.isAvailable())  return availability.getReason();
+        if (!availability.isAvailable()) return availability.getReason();
 
         ResponseEntity<Object> response = vendController.listProduct();
         List<ItemDTO> items = (List<ItemDTO>) response.getBody();
         StringBuilder sb = new StringBuilder();
-        sb.append("ID\t\tNAME \t\t\t\tPrice (£)").append(System.getProperty("line.separator"));
-        sb.append("---------------------------------------------").append(System.getProperty("line.separator"));
+        sb.append("ID\t\tNAME \t\t\t\tPrice (£)").append(LINE_SEPARATOR);
+        sb.append("---------------------------------------------").append(LINE_SEPARATOR);
         items.stream().forEach(itemDTO -> {
-            sb.append(itemDTO.getId()).append("\t\t").append(itemDTO.getName()).append("\t\t").append(itemDTO.getPrice()).append(System.getProperty("line.separator"));
+            sb.append(itemDTO.getId()).append("\t\t").append(itemDTO.getName()).append("\t\t").append(itemDTO.getPrice()).append(LINE_SEPARATOR);
         });
 
         return sb.toString();
@@ -61,7 +66,7 @@ public class TestCommands {
     @ShellMethod(value = "select item")
     public String select(@ShellOption(value = "--id") long id) {
         Availability availability = machineAvailabilityCheck();
-        if(!availability.isAvailable())  return availability.getReason();
+        if (!availability.isAvailable()) return availability.getReason();
 
         ResponseEntity<Object> vend = vendController.select(id);
         Object body = vend.getBody();
@@ -84,7 +89,7 @@ public class TestCommands {
                     .sorted((o1, o2) -> Integer.valueOf(o1.ordinal()).compareTo(o2.ordinal()))
                     .forEach(coin -> {
                         sb.append(coin.ordinal()).append("\t\t")
-                                .append(coin.name()).append(System.getProperty("line.separator"));
+                                .append(coin.name()).append(LINE_SEPARATOR);
                     });
 
             return sb.toString();
@@ -94,17 +99,17 @@ public class TestCommands {
     }
 
     @ShellMethod(value = "vend")
-    public String vend(@ShellOption("--id") int itemId, @ShellOption("--coins") int... coinIds){
+    public String vend(@ShellOption("--id") int itemId, @ShellOption("--coins") int... coinIds) {
         Availability availability = machineAvailabilityCheck();
-        if(!availability.isAvailable())  return availability.getReason();
+        if (!availability.isAvailable()) return availability.getReason();
 
         VendRequest vendRequest = new VendRequest();
         vendRequest.setItemId(itemId);
         List<Coin> coins = new ArrayList<>();
 
-        for(int i=0; i < coinIds.length; i++){
+        for (int i = 0; i < coinIds.length; i++) {
             Coin coin = values()[coinIds[i]];
-            if(coin != null){
+            if (coin != null) {
                 coins.add(coin);
             }
         }
@@ -129,17 +134,37 @@ public class TestCommands {
     // for some reason this method will not get automatically picked up by the caller methods
     // hence, we manually call the method to check it.
     @ShellMethodAvailability({"list", "select"})
-    public Availability machineAvailabilityCheck(){
-        if(vendingMachine == null){
-            if(vendingMachineService.getMachine().isPresent()){
+    public Availability machineAvailabilityCheck() {
+        if (vendingMachine == null) {
+            if (vendingMachineService.getMachine().isPresent()) {
                 vendingMachine = vendingMachineService.getMachine().get();
             }
         }
 
-        if(vendingMachine != null && vendingMachine.getStatus() == VendingMachine.Status.READY){
+        if (vendingMachine != null && vendingMachine.getStatus() == VendingMachine.Status.READY) {
             return Availability.available();
         }
 
         return Availability.unavailable("Vending Machine has not been created or not ready");
+    }
+
+    @ShellMethod(value = "track changes")
+    public String track() {
+        ResponseEntity<Object> response = vendController.trackChanges();
+        StringBuilder sb = new StringBuilder();
+
+        if (response.getBody() != null) {
+            Map<String, Integer> trackingMap = (Map<String, Integer>) response.getBody();
+
+            trackingMap.entrySet().stream()
+                    .forEach(stringIntegerEntry -> {
+                        sb.append(stringIntegerEntry.getKey())
+                                .append("\t")
+                                .append(stringIntegerEntry.getValue())
+                                .append(LINE_SEPARATOR);
+                    });
+
+        }
+        return sb.toString();
     }
 }
