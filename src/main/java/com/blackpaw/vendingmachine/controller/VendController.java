@@ -3,6 +3,7 @@ package com.blackpaw.vendingmachine.controller;
 import com.blackpaw.vendingmachine.dto.ItemDTO;
 import com.blackpaw.vendingmachine.model.*;
 import com.blackpaw.vendingmachine.service.ItemService;
+import com.blackpaw.vendingmachine.service.TrackerService;
 import com.blackpaw.vendingmachine.service.VendingMachineService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -32,6 +33,8 @@ public class VendController {
     private VendingMachineService vendingMachineService;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private TrackerService trackerService;
 
     @Value("${vending-machine.float.min}")
     private double minCashFloat;
@@ -137,11 +140,14 @@ public class VendController {
             }
             else if(customerPaid == itemPrice){
                 itemService.updateItem(optSelectedItem.get(), false);
+
                 vendingMachineService.updateMachine(vendRequest, customerPaid, true);
+                updateTracker(optSelectedItem.get(), Collections.emptyList());
                 return new ResponseEntity<>("Item successfully vended. Thank you.", HttpStatus.OK);
             }
             else{
                 List<Coin> balanceInCoins = returnCustomerBalance(vendRequest, customerPaid, optSelectedItem.get());
+                updateTracker(optSelectedItem.get(), balanceInCoins);
                 return new ResponseEntity<>(
                         "Item successfully vended. Thank you.\nTake the balance\n"+
                         balanceInCoins,
@@ -150,6 +156,21 @@ public class VendController {
         }
         else
             return new ResponseEntity<>("item not available", HttpStatus.NOT_FOUND);
+    }
+
+    private void updateTracker(Item item, List<Coin> coins){
+        Tracker tracker = new Tracker();
+        tracker.setItem(item);
+
+        Map<Coin, List<Coin>> allCoins = coins.stream()
+                .collect(Collectors.groupingBy(coin -> coin));
+
+        allCoins.entrySet().stream().forEach(coinListEntry -> {
+            tracker.updateCoins(coinListEntry.getKey(), coinListEntry.getValue().size());
+        });
+
+        trackerService.save(tracker);
+
     }
 
     private List<Coin> returnCustomerBalance(VendRequest vendRequest, double customerPaid, Item item) {

@@ -39,8 +39,6 @@ class TestCommandsTest {
 
     @MockBean
     private VendController vendController;
-    @MockBean
-    private ItemService itemService;
 
     @MockBean
     private VendingMachineService vendingMachineService;
@@ -48,6 +46,7 @@ class TestCommandsTest {
     @BeforeEach
     private void setup() {
         vendingMachine = create_GBVendingMachine_50_Float(VendingMachine.Status.READY);
+        testCommands.setVendingMachine(vendingMachine);
         Optional<VendingMachine> optionalVendingMachine = Optional.of(vendingMachine);
         response = new ResponseEntity<>(vendingMachine, HttpStatus.OK);
 
@@ -142,6 +141,7 @@ class TestCommandsTest {
     @Test
     void machineAvailabilityCheck_returnUnavailableWhenMachineIsNull() {
         Optional<VendingMachine> optionalVendingMachine = Optional.empty();
+        testCommands.setVendingMachine(null);
         when(vendingMachineService.getMachine()).thenReturn(optionalVendingMachine);
 
         Availability availability = testCommands.machineAvailabilityCheck();

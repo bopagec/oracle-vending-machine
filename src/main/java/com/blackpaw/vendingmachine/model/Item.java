@@ -26,6 +26,7 @@ public class Item {
     @JsonManagedReference
     private VendingMachine vendingMachine;
 
+
     public Item(String name, double price, int stock, VendingMachine vendingMachine){
         this.name = name;
         this.price = price;
